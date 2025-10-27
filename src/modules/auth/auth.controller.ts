@@ -4,12 +4,13 @@ import {
   HttpCode,
   Patch,
   Post,
+
 } from '@nestjs/common';
 
 
 import { AuthenticationService } from './auth.service';
-import { confirmEmailBodyDto, loginBodyDto, resendConfirmEmailBodyDto,SignupBodyDto } from './dto/auth.dto';
-import { loginResponse } from './entites';
+import { confirmEmailBodyDto, IGmail, loginBodyDto, resendConfirmEmailBodyDto, ResetPasswordDto, SendOtpDto, SignupBodyDto, VerifyOtpDto } from './dto/auth.dto';
+
 
 
 @Controller('auth')
@@ -24,21 +25,62 @@ export class AuthenticationController {
     return { message: 'done' };
   }
 
-  @Post('resendConfirmEmail')
-  async resendConfirmEmail(@Body()
-  body: resendConfirmEmailBodyDto) {
+  
+  @HttpCode(200)
+  @Post('signup/gmail')
+  async signupWthGmail(@Body() body: IGmail) {
     console.log({ body });
-    await this.authenticationService.resendConfirmEmail(body)
-    return { message: 'done' };
+    const credentials = await this.authenticationService.signupWithGmail(body)
+    return { message: 'done', data: { credentials } };
   }
 
-  @Patch('confirm-Email')
-  async confirmEmail(@Body()
-  body: confirmEmailBodyDto) {
+    @HttpCode(200)
+  @Post('login/gmail')
+  async loginWthGmail(@Body() body: IGmail) {
     console.log({ body });
-    await this.authenticationService.confirmEmail(body)
+      const credentials = await this.authenticationService.loginWithGmail(body)
+    return { message: 'done', data: { credentials } };
+  }
+
+    @Patch('resendConfirmEmail')
+    async resendConfirmEmail(@Body()
+    body: resendConfirmEmailBodyDto) {
+      console.log({ body });
+    await this.authenticationService.resendConfirmEmail(body)
+      return { message: 'done' };
+    }
+
+    @Patch('confirm-Email')
+    async confirmEmail(@Body()
+    body: confirmEmailBodyDto) {
+      console.log({ body });
+      await this.authenticationService.confirmEmail(body)
     return { message: 'done' };
   }
+  
+      @Patch('send-forget-password-otp')
+    async sendForgetPasswordOtp(@Body()
+    body: SendOtpDto) {
+      console.log({ body });
+      await this.authenticationService.sendForgetPasswordOtp(body)
+    return { message: 'done' };
+  }
+  
+      @Patch('verify-forget-password')
+    async verifyForgetPasswordOtp(@Body()
+    body: VerifyOtpDto) {
+      console.log({ body });
+      await this.authenticationService.verifyForgetPasswordOtp(body)
+    return { message: 'done' };
+  }
+  
+      @Patch('reset-password')
+    async resetPassword(@Body()
+    body: ResetPasswordDto) {
+      console.log({ body });
+      await this.authenticationService.resetPassword(body)
+    return { message: 'done' };
+    }
 
   @HttpCode(200)
   @Post('login')
@@ -48,3 +90,4 @@ export class AuthenticationController {
     return { message: 'done', data: { credentials } };
   }
 }
+

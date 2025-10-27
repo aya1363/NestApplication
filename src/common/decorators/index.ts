@@ -1,1 +1,5 @@
 export * from './match.custom.decorator'
+export * from './token.type.decorator'
+export * from './role.type.decorator'
+export * from './auth.decorator'
+export * from './credential.decorator'

@@ -5,12 +5,10 @@ import { UserDocument as TDocument, User} from '../Model/User.model'
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
-export class UserRepository extends DataBaseRepository<TDocument>{
-    constructor(@InjectModel(User.name)  protected override readonly model: Model<TDocument>) {
+export class UserRepository extends DataBaseRepository<User>{
+    constructor(@InjectModel(User.name) protected override readonly model: Model<TDocument>) {
         super(model)
     }
-
-    
 
      async createUser({
         data,

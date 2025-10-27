@@ -10,6 +10,7 @@ export const emailEvent = new EventEmitter()
 
 
 
+
 emailEvent.on(OtpEnum.resetPassword, async (data): Promise<void> => {
   try {
     await sendEmail({
@@ -18,7 +19,7 @@ emailEvent.on(OtpEnum.resetPassword, async (data): Promise<void> => {
       html: await emailVerification({ otp: data.otp, title: data.title }),
     })
   } catch (error) {
-    console.error(`Failed to send sendForgetPassword to ${data.to}`, error)
+    console.error(`Failed to send sendForgetPassword otp to ${data.to}`, error)
   }
 })
 

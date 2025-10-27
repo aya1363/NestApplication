@@ -80,7 +80,7 @@ export const emailVerification = async ({ otp, title = `Confirm Your Email` }: {
 <body>
   <div class="container">
     <h1>${title}</h1>
-    <p>Use the OTP below to verify your email address:</p>
+    <p>Please use the following OTP to complete your verification process</p>
 
     <div class="otp-box">${otp}</div>
 

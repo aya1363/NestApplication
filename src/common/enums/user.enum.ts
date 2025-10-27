@@ -13,3 +13,8 @@ export enum GenderEnum {
     Male = 'male',
     Female ='female'
 }
+
+export enum PreferredLanguage {
+    EN = 'EN',
+    AR ='AR'
+}

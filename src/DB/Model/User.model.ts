@@ -1,7 +1,8 @@
 import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { GenderEnum, generateHash, ProviderEnum, RoleEnum } from 'src/common';
+import { GenderEnum, PreferredLanguage, ProviderEnum, RoleEnum } from '../../common/enums';
 import { OtpDocument } from './otp.model';
+import { generateHash } from 'src/common';
 
 @Schema({
     strictQuery: true,
@@ -59,7 +60,12 @@ export class User {
 
     @Prop({
         type: String,
-        required: true
+        password: {
+        type: String,
+        required: function() {
+        return this.provider !== ProviderEnum.GOOGLE; // 👈 required فقط للي مش Google
+  }
+}
     })
     password: string;
     @Prop({
@@ -84,6 +90,18 @@ export class User {
         default:RoleEnum.user
     })
     role: RoleEnum
+
+        @Prop({
+        type: String,
+        enum: PreferredLanguage,
+        default:PreferredLanguage.EN
+    })
+    preferredLanguage: PreferredLanguage
+
+    @Prop({
+        type: String
+    })
+    profilePicture:string
     
     @Virtual()
     otp:OtpDocument[]
@@ -91,7 +109,7 @@ export class User {
 }
 
 
-const userSchema = SchemaFactory.createForClass(User)
+export const userSchema = SchemaFactory.createForClass(User)
 userSchema.virtual('otp', {
     localField: '_id',
     foreignField: 'createdBy',

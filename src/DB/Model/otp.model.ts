@@ -29,7 +29,7 @@ export class Otp {
     type:OtpEnum
 }
 export type OtpDocument = HydratedDocument<Otp>
-const otpSchema = SchemaFactory.createForClass(Otp)
+export const otpSchema = SchemaFactory.createForClass(Otp)
 otpSchema.index({ expiredAt: 1 }, { expireAfterSeconds: 0 })
 
 
@@ -37,21 +37,23 @@ otpSchema.pre('save',
     async function (this: OtpDocument &
 { wasNew: boolean, plainOtp?: string },
     next) {
-    console.log(this);
+   // console.log(this);
     this.wasNew = this.isNew
     if (this.isModified('code')) {
-          this.plainOtp = this.code
+        this.plainOtp = this.code
         this.code = await generateHash({ plainText: this.code })
         await this.populate([{path:'createdBy',select:'email'}])
     }
     next()
     })
-otpSchema.post('save',  function (doc, next) {
-  const that =this as OtpDocument &{ wasNew: boolean, plainOtp?: string }
+otpSchema.post('save', function (doc, next) {
+    console.log(doc);
+    
+    const that =this as OtpDocument &{ wasNew: boolean, plainOtp?: string }
   //  console.log({ email: (that.createdBy as any).email,wasNew: that.wasNew, otp: that.plainOtp});
-   if (that.wasNew && that.plainOtp) {
-       emailEvent.emit(doc.type, {to:(that.createdBy as any).email , otp:that.plainOtp})
-   }
+    if (that.wasNew && that.plainOtp) {
+        emailEvent.emit(doc.type, {to:(that.createdBy as any).email , otp:that.plainOtp})
+    }
     next()
 })
 export const OtpModel = MongooseModule.forFeature([{name:Otp.name , schema:otpSchema}])

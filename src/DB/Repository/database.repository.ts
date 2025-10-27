@@ -1,22 +1,28 @@
 import {
-    CreateOptions, DeleteResult, FlattenMaps,
-    HydratedDocument, Model, MongooseUpdateQueryOptions,
-    PipelineStage, PopulateOptions,
-    ProjectionType, QueryOptions, RootFilterQuery, Types,
-    UpdateQuery, UpdateWriteOpResult
+  CreateOptions,
+  DeleteResult,
+  FlattenMaps,
+  HydratedDocument,
+  Model,
+  MongooseUpdateQueryOptions,
+  PipelineStage,
+  PopulateOptions,
+  ProjectionType,
+  QueryOptions,
+  RootFilterQuery,
+  Types,
+  UpdateQuery,
+  UpdateWriteOpResult,
 } from 'mongoose';
 
+export type Lean<T> = HydratedDocument<FlattenMaps<T>>;
+export abstract class DataBaseRepository<TR, TDocument = HydratedDocument<TR>> {
+  protected constructor(protected model: Model<TDocument>) {}
 
-export type Lean<T> = HydratedDocument<FlattenMaps<T>>
-export abstract class DataBaseRepository<TDocument> {
-    protected constructor(protected model: Model<TDocument>) { }
-    
-
-
-      async findOneAndUpdate({
+  async findOneAndUpdate({
     filter,
     update,
-    options,
+    options={new:true},
   }: {
     filter: RootFilterQuery<TDocument>;
     update: UpdateQuery<TDocument>;
@@ -25,7 +31,7 @@ export abstract class DataBaseRepository<TDocument> {
     let doc = this.model.findOneAndUpdate(
       filter,
       update,
-      options || { new: true }
+      options || { new: true },
     );
 
     if (options?.populate) {
@@ -56,7 +62,7 @@ export abstract class DataBaseRepository<TDocument> {
     select?: ProjectionType<TDocument> | null;
     options?: QueryOptions<TDocument> | null;
   }): Promise<Lean<TDocument> | HydratedDocument<TDocument> | null> {
-    const doc = this.model.findOne(filter).select(select || "");
+    const doc = this.model.findOne(filter).select(select || '');
     if (options?.populate) {
       doc.populate(options.populate as PopulateOptions[]);
     }
@@ -89,7 +95,7 @@ export abstract class DataBaseRepository<TDocument> {
         ...update,
         $inc: { __v: 1 },
       },
-      options
+      options,
     );
   }
 
@@ -102,7 +108,7 @@ export abstract class DataBaseRepository<TDocument> {
     select?: ProjectionType<TDocument> | undefined;
     options?: QueryOptions<TDocument> | undefined;
   }): Promise<Array<Lean<TDocument>> | Array<HydratedDocument<TDocument>>> {
-    let query = this.model.find(filter).select(select || "");
+    let query = this.model.find(filter).select(select || '');
 
     if (options.skip !== undefined) {
       query = query.skip(options.skip);
@@ -113,11 +119,11 @@ export abstract class DataBaseRepository<TDocument> {
     }
 
     if (options.sort) {
-      query = query.sort(options.sort );
+      query = query.sort(options.sort);
     }
 
     if (options.populate) {
-      if (typeof options.populate === "string") {
+      if (typeof options.populate === 'string') {
         query = query.populate(options.populate);
       } else if (Array.isArray(options.populate)) {
         query = query.populate(options.populate);
@@ -138,7 +144,7 @@ export abstract class DataBaseRepository<TDocument> {
     select?: ProjectionType<TDocument> | undefined;
     options?: QueryOptions<TDocument> | undefined;
   }): Promise<Lean<TDocument> | HydratedDocument<TDocument> | null> {
-    let query = this.model.findById(id).select(select || "");
+    let query = this.model.findById(id).select(select || '');
 
     if (options.skip !== undefined) {
       query = query.skip(options.skip);
@@ -149,11 +155,11 @@ export abstract class DataBaseRepository<TDocument> {
     }
 
     if (options.sort) {
-      query = query.sort(options.sort );
+      query = query.sort(options.sort);
     }
 
     if (options.populate) {
-      if (typeof options.populate === "string") {
+      if (typeof options.populate === 'string') {
         query = query.populate(options.populate);
       } else if (Array.isArray(options.populate)) {
         query = query.populate(options.populate);
@@ -170,7 +176,7 @@ export abstract class DataBaseRepository<TDocument> {
     update,
     options = { new: true },
   }: {
-    id: Types.ObjectId ;
+    id: Types.ObjectId;
     update?: UpdateQuery<TDocument>;
     options?: QueryOptions<TDocument> | null;
   }): Promise<HydratedDocument<TDocument> | Lean<TDocument> | null> {
@@ -180,7 +186,7 @@ export abstract class DataBaseRepository<TDocument> {
         ...update,
         $inc: { __v: 1 },
       },
-      options
+      options,
     );
   }
 
@@ -198,43 +204,41 @@ export abstract class DataBaseRepository<TDocument> {
     return result as HydratedDocument<TDocument>[];
   }
 
-async paginate({
-  filter = {},
-  options = {},
-  select,
-  page = 'all',
-  size = 5,
-}: {
-  filter: RootFilterQuery<TDocument>;
-  select?: ProjectionType<TDocument> | undefined;
-  options?: QueryOptions<TDocument> | undefined;
-  page?: number | 'all';
-  size?: number;
-}): Promise<{
-  currentPage: number | 'all';
-  pages?: number;
-  result: HydratedDocument<TDocument>[] | Lean<TDocument>[];
-}> {
-  let docsCount: number | undefined = undefined;
-  let pages: number | undefined = undefined;
+  async paginate({
+    filter = {},
+    options = {},
+    select,
+    page = 'all',
+    size = 5,
+  }: {
+    filter: RootFilterQuery<TDocument>;
+    select?: ProjectionType<TDocument> | undefined;
+    options?: QueryOptions<TDocument> | undefined;
+    page?: number | 'all';
+    size?: number;
+  }): Promise<{
+    currentPage: number | 'all';
+    pages?: number;
+    result: HydratedDocument<TDocument>[] | Lean<TDocument>[];
+  }> {
+    let docsCount: number | undefined = undefined;
+    let pages: number | undefined = undefined;
 
-  if (page !== 'all') {
-    page = Math.floor(page < 1 ? 1 : page);
-    options.limit = Math.floor(size < 1 || !size ? 5 : size);
-    options.skip = (page - 1) * options.limit;
+    if (page !== 'all') {
+      page = Math.floor(page < 1 ? 1 : page);
+      options.limit = Math.floor(size < 1 || !size ? 5 : size);
+      options.skip = (page - 1) * options.limit;
 
-    docsCount = await this.model.countDocuments(filter);
-    pages = Math.ceil(docsCount / options.limit);
-  }
+      docsCount = await this.model.countDocuments(filter);
+      pages = Math.ceil(docsCount / options.limit);
+    }
 
-  const result = await this.find({ filter, select, options });
+    const result = await this.find({ filter, select, options });
 
     return {
-   
-    currentPage: page,
-    pages,
-    result,
-  };
-}
-
+      currentPage: page,
+      pages,
+      result,
+    };
   }
+}

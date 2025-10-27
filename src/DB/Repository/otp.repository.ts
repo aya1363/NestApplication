@@ -1,18 +1,15 @@
-import {  Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { DataBaseRepository } from './database.repository';
-import { OtpDocument as TDocument,Otp} from '../Model'
+import { OtpDocument as TDocument, Otp } from '../Model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class OtpRepository extends DataBaseRepository<TDocument>{
-    constructor(
-        @InjectModel(Otp.name)
-        protected override readonly model: Model<TDocument>,) {
-        super(model)
-    }
-
-    
-
-
+export class OtpRepository extends DataBaseRepository<Otp> {
+  constructor(
+    @InjectModel(Otp.name)
+    protected override readonly model: Model<TDocument>,
+  ) {
+    super(model);
+  }
 }

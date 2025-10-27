@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthenticationModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { SharedAuthenticationModule } from './common/modules';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserModule } from './modules/user/user.module';
     MongooseModule.forRoot(process.env.DB_URI as string, {
       serverSelectionTimeoutMS:30000
     }),
+    SharedAuthenticationModule,
     AuthenticationModule,
     UserModule,
   ],
