@@ -5,4 +5,5 @@ export * from './services'
 export * from './middleware'
 export * from './entities'
 export * from './interceptors'
+export * from './interfaces'
 

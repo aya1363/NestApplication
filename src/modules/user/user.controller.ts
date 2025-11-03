@@ -4,13 +4,14 @@ import {
   UploadedFiles,
   UseInterceptors} from '@nestjs/common';
 import { UserService } from './user.service';
-import { Auth, fileValidation, RoleEnum, User } from 'src/common';
+import { Auth, cloudFileUpload, fileValidation, RoleEnum, storageEnum, successResponse, User } from 'src/common';
 import type{ UserDocument } from 'src/DB/Model';
 import { PreferredLanguageInterceptor } from 'src/common/interceptors';
 import { delay, of ,Observable} from 'rxjs';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { localFileUpload } from 'src/common';
-import type { IMulterFile } from 'src/common/interfaces';
+import type { IMulterFile, IResponse } from 'src/common/interfaces';
+import { ProfileResponse } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -26,17 +27,22 @@ profile(
   return of([{message:'done'}]).pipe(delay(200));
   }
   @UseInterceptors(FileInterceptor('profileImage',
-    localFileUpload({folder:'User',validation:fileValidation.image})
+    cloudFileUpload({storageApproach:storageEnum.memory,
+      validation: fileValidation.image,
+      fileSize: 2
+    })
   ))
   @Auth([RoleEnum.user])
   @Patch('profile-image')
-  profileImage(@UploadedFile(new ParseFilePipe({fileIsRequired:true})) file:IMulterFile){
+  async profileImage(@User() user: UserDocument,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: true }))
+    file: Express.Multer.File): Promise<IResponse<ProfileResponse>> {
   
-    console.log({file});
+  //  console.log({file});
     
+const profile =await this.userService.profilePicture(file ,user)
 
-
-    return {message:'done' , file}
+    return successResponse<ProfileResponse>({data:{profile}})
   }
 
   @UseInterceptors(FilesInterceptor('coverImages', 2,
@@ -51,7 +57,7 @@ profile(
     
 
 
-    return {message:'done' , files}
+    return successResponse()
   }
   @Post('list')
   list(): { message: string } {

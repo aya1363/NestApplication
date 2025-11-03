@@ -1,4 +1,25 @@
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { Types } from "mongoose";
+
+
+@ValidatorConstraint({ name: 'matchBetweenTwoFields', async: false })
+export class MongoIdsValidate  implements ValidatorConstraintInterface{
+  validate(ids: Types.ObjectId[], args?: ValidationArguments): Promise<boolean> | boolean {
+  console.log(args?.property);
+  
+    for (const id of ids) {
+    if (!Types.ObjectId.isValid(id)) {
+      return false
+    }
+  }
+    return true
+  }
+    defaultMessage(args?: ValidationArguments): string {
+    console.log(args?.property);
+    
+      return `invalid mongo DB Ids format`;
+  }
+}
 
 @ValidatorConstraint({ name: 'matchBetweenTwoFields', async: false })
 export class MatchBetweenTwoFields <T=any> implements ValidatorConstraintInterface{
@@ -9,12 +30,12 @@ export class MatchBetweenTwoFields <T=any> implements ValidatorConstraintInterfa
       matchWith: args?.constraints[0],
       matchWithValue: args?.object[args.constraints[0]]
     });
-    return value ===args?.object['password']
+    return value ===args?.object[args.constraints[0]]
     
     
   }
     defaultMessage(args?: ValidationArguments): string {
-    const [relatedFieldName] = args?.constraints ?? [];
+    const [relatedFieldName] = args?.constraints[0] ?? [];
     return `${args?.property} must match ${relatedFieldName}`;
   }
 }

@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import { GenderEnum, PreferredLanguage, ProviderEnum, RoleEnum } from '../../common/enums';
 import { OtpDocument } from './otp.model';
 import { generateHash } from 'src/common';
+import { IUser } from 'src/common';
 
 @Schema({
     strictQuery: true,
@@ -10,7 +11,7 @@ import { generateHash } from 'src/common';
     toJSON: { virtuals: true },
     toObject:{virtuals:true}
 })
-export class User {
+export class User implements IUser{
     @Prop({
         type: String,
         required: true,
@@ -63,8 +64,8 @@ export class User {
         password: {
         type: String,
         required: function() {
-        return this.provider !== ProviderEnum.GOOGLE; // 👈 required فقط للي مش Google
-  }
+        return this.provider !== ProviderEnum.GOOGLE; 
+}
 }
     })
     password: string;

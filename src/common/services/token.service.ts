@@ -40,18 +40,9 @@ export class TokenService {
     token: string;
     options?: JwtVerifyOptions;
   }): Promise<JwtPayload> => {
-    try {
+  
       return (await this.jwtService.verifyAsync(token, options)) as unknown as JwtPayload;
-    } catch (error) {
-      // 🔥 handle known JWT errors
-      if (error.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('Token has expired. Please log in again.');
-      } else if (error.name === 'JsonWebTokenError') {
-        throw new UnauthorizedException('Invalid token.');
-      } else {
-        throw new UnauthorizedException('Token verification failed.');
-      }
-    }
+
   };
   detectSignature = async (
     role: RoleEnum = RoleEnum.user,

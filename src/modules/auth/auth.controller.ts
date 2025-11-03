@@ -10,6 +10,7 @@ import {
 
 import { AuthenticationService } from './auth.service';
 import { confirmEmailBodyDto, IGmail, loginBodyDto, resendConfirmEmailBodyDto, ResetPasswordDto, SendOtpDto, SignupBodyDto, VerifyOtpDto } from './dto/auth.dto';
+import { IResponse, loginCredentialsResponse, successResponse } from 'src/common';
 
 
 
@@ -19,75 +20,75 @@ export class AuthenticationController {
 
   @Post('signup')
   async signup(@Body()
-  body: SignupBodyDto) {
+  body: SignupBodyDto):Promise<IResponse<{message:string}>> {
     console.log({ body });
     await this.authenticationService.signup(body)
-    return { message: 'done' };
+    return successResponse()
   }
 
   
   @HttpCode(200)
   @Post('signup/gmail')
-  async signupWthGmail(@Body() body: IGmail) {
+  async signupWthGmail(@Body() body: IGmail):Promise<IResponse<loginCredentialsResponse>> {
     console.log({ body });
     const credentials = await this.authenticationService.signupWithGmail(body)
-    return { message: 'done', data: { credentials } };
+    return successResponse<loginCredentialsResponse>({data: credentials} ) ;
   }
 
     @HttpCode(200)
   @Post('login/gmail')
-  async loginWthGmail(@Body() body: IGmail) {
+  async loginWthGmail(@Body() body: IGmail):Promise<IResponse<loginCredentialsResponse>> {
     console.log({ body });
       const credentials = await this.authenticationService.loginWithGmail(body)
-    return { message: 'done', data: { credentials } };
+    return successResponse<loginCredentialsResponse>({data: credentials} ) ;
   }
 
     @Patch('resendConfirmEmail')
     async resendConfirmEmail(@Body()
-    body: resendConfirmEmailBodyDto) {
+    body: resendConfirmEmailBodyDto):Promise<IResponse<{message:string}>> {
       console.log({ body });
     await this.authenticationService.resendConfirmEmail(body)
-      return { message: 'done' };
+      return successResponse();
     }
 
     @Patch('confirm-Email')
     async confirmEmail(@Body()
-    body: confirmEmailBodyDto) {
+    body: confirmEmailBodyDto):Promise<IResponse<{message:string}>> {
       console.log({ body });
       await this.authenticationService.confirmEmail(body)
-    return { message: 'done' };
+    return successResponse();
   }
   
       @Patch('send-forget-password-otp')
     async sendForgetPasswordOtp(@Body()
-    body: SendOtpDto) {
+    body: SendOtpDto):Promise<IResponse<{message:string}>> {
       console.log({ body });
       await this.authenticationService.sendForgetPasswordOtp(body)
-    return { message: 'done' };
+      return successResponse()
   }
   
       @Patch('verify-forget-password')
     async verifyForgetPasswordOtp(@Body()
-    body: VerifyOtpDto) {
+    body: VerifyOtpDto):Promise<IResponse<{message:string}>> {
       console.log({ body });
       await this.authenticationService.verifyForgetPasswordOtp(body)
-    return { message: 'done' };
+    return successResponse()
   }
   
       @Patch('reset-password')
     async resetPassword(@Body()
-    body: ResetPasswordDto) {
+    body: ResetPasswordDto):Promise<IResponse<{message:string}> >{
       console.log({ body });
       await this.authenticationService.resetPassword(body)
-    return { message: 'done' };
+    return successResponse()
     }
 
   @HttpCode(200)
   @Post('login')
-  async login(@Body() body: loginBodyDto) {
+  async login(@Body() body: loginBodyDto):Promise<IResponse<loginCredentialsResponse>> {
     console.log({ body });
     const credentials = await this.authenticationService.login(body)
-    return { message: 'done', data: { credentials } };
+    return successResponse<loginCredentialsResponse>({data: credentials} ) ;
   }
 }
 

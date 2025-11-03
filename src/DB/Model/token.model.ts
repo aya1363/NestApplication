@@ -1,5 +1,6 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { IToken } from 'src/common';
 
 @Schema({
   strictQuery: true,
@@ -7,7 +8,7 @@ import { HydratedDocument, Types } from 'mongoose';
   toJSON: { virtuals: true },
   toObject: { virtuals: true },
 })
-export class Token {
+export class Token implements IToken {
   @Prop({
     type: String,
     required: true,

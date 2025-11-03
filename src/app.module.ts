@@ -8,6 +8,10 @@ import { AppService } from './app.service';
 import { AuthenticationModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { SharedAuthenticationModule } from './common/modules';
+import { GlobalExceptionFilter, S3Service } from './common';
+import { BrandModule } from './modules/brand/brand.module';
+import { APP_FILTER } from '@nestjs/core';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -21,8 +25,16 @@ import { SharedAuthenticationModule } from './common/modules';
     SharedAuthenticationModule,
     AuthenticationModule,
     UserModule,
+    BrandModule,
+    CategoryModule
+    
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, S3Service,
+      {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

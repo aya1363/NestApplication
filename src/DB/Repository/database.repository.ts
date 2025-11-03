@@ -22,16 +22,27 @@ export abstract class DataBaseRepository<TR, TDocument = HydratedDocument<TR>> {
   async findOneAndUpdate({
     filter,
     update,
-    options={new:true},
+    options = { new: true },
+    
   }: {
     filter: RootFilterQuery<TDocument>;
     update: UpdateQuery<TDocument>;
-    options?: (QueryOptions<TDocument> & { new?: boolean }) | null;
-  }): Promise<HydratedDocument<TDocument> | Lean<TDocument> | null> {
+    options?: QueryOptions<TDocument> | null;
+    }): Promise<HydratedDocument<TDocument> | Lean<TDocument> | null> {
+    
+      if (Array.isArray(update)) {
+      update.push({
+        $set: {
+          __v: { $add: [`$__v`, 1] },
+        },
+      });
+      return await this.model.findOneAndUpdate(filter || {}, update, options);
+    }
     let doc = this.model.findOneAndUpdate(
-      filter,
-      update,
-      options || { new: true },
+      filter || {},
+      { ...update, $inc: { __v: 1 } },
+      
+      options ,
     );
 
     if (options?.populate) {
@@ -53,6 +64,14 @@ export abstract class DataBaseRepository<TR, TDocument = HydratedDocument<TR>> {
     return this.model.deleteMany(filter);
   }
 
+async findOneAndDelete({
+  filter,
+}: {
+  filter: RootFilterQuery<TDocument>;
+}): Promise<HydratedDocument<TDocument> | null> {
+  return this.model.findOneAndDelete(filter);
+}
+
   async findOne({
     filter,
     select,
@@ -61,7 +80,9 @@ export abstract class DataBaseRepository<TR, TDocument = HydratedDocument<TR>> {
     filter?: RootFilterQuery<TDocument>;
     select?: ProjectionType<TDocument> | null;
     options?: QueryOptions<TDocument> | null;
-  }): Promise<Lean<TDocument> | HydratedDocument<TDocument> | null> {
+    }): Promise<Lean<TDocument> | HydratedDocument<TDocument> | null> {
+    
+    
     const doc = this.model.findOne(filter).select(select || '');
     if (options?.populate) {
       doc.populate(options.populate as PopulateOptions[]);
@@ -204,41 +225,46 @@ export abstract class DataBaseRepository<TR, TDocument = HydratedDocument<TR>> {
     return result as HydratedDocument<TDocument>[];
   }
 
-  async paginate({
-    filter = {},
-    options = {},
-    select,
-    page = 'all',
-    size = 5,
-  }: {
-    filter: RootFilterQuery<TDocument>;
-    select?: ProjectionType<TDocument> | undefined;
-    options?: QueryOptions<TDocument> | undefined;
-    page?: number | 'all';
-    size?: number;
-  }): Promise<{
-    currentPage: number | 'all';
-    pages?: number;
-    result: HydratedDocument<TDocument>[] | Lean<TDocument>[];
-  }> {
-    let docsCount: number | undefined = undefined;
-    let pages: number | undefined = undefined;
+async paginate({
+  filter = {},
+  options = {},
+  select,
+  page = 'all',
+  size = 5,
+}: {
+  filter: RootFilterQuery<TDocument>;
+  select?: ProjectionType<TDocument> | undefined;
+  options?: QueryOptions<TDocument> | undefined;
+  page?: number | 'all';
+  size?: number;
+}): Promise<{
+  currentPage: number | 'all';
+  pages?: number;
+  limit?: number;
+  docsCount?: number;
+  result: HydratedDocument<TDocument>[] | Lean<TDocument>[];
+}> {
+  let docsCount: number | undefined = undefined;
+  let pages: number | undefined = undefined;
 
-    if (page !== 'all') {
-      page = Math.floor(page < 1 ? 1 : page);
-      options.limit = Math.floor(size < 1 || !size ? 5 : size);
-      options.skip = (page - 1) * options.limit;
+  if (page !== 'all') {
+    page = Math.floor(page < 1 ? 1 : page);
+    options.limit = Math.floor(size < 1 || !size ? 5 : size);
+    options.skip = (page - 1) * options.limit;
 
-      docsCount = await this.model.countDocuments(filter);
-      pages = Math.ceil(docsCount / options.limit);
-    }
-
-    const result = await this.find({ filter, select, options });
-
-    return {
-      currentPage: page,
-      pages,
-      result,
-    };
+    docsCount = await this.model.countDocuments(filter);
+    pages = Math.ceil(docsCount / options.limit);
   }
+
+  const result = await this.find({ filter, select, options });
+
+  return {
+    docsCount,
+    limit: options.limit,
+    currentPage: page,
+    pages,
+    result,
+  };
+}
+
 }
