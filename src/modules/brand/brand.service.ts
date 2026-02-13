@@ -1,12 +1,12 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import {  GetAllBrandQueryDto, UpdateBrandDto } from './dto/update-brand.dto';
-import { BrandRepository } from 'src/DB/Repository';
-import { FolderEnum, S3Service } from 'src/common';
-import type { BrandDocument } from 'src/DB/Model';
-import type {UserDocument} from 'src/DB/Model'
+import { BrandRepository } from '../../DB/Repository';
+import { FolderEnum, S3Service } from '../../common';
+import type { BrandDocument } from '../../DB/Model';
+import type {UserDocument} from '../../DB/Model'
 import { Types } from 'mongoose';
-import { Lean } from 'src/DB/Repository/database.repository';
+import { Lean } from '../../DB/Repository/database.repository';
 
 @Injectable()
 export class BrandService {
@@ -118,7 +118,7 @@ async freeze(
     filter: {
       _id: brandId,
       freezedAt: { $exists: true },
-        paranoid: false, // ✅ skip paranoid hook
+        paranoid: false, 
     }, 
     update: {
       restoredAt: new Date(),
@@ -201,5 +201,5 @@ async freeze(
     return brand;
   }
 
- 
+
 }

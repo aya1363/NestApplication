@@ -1,5 +1,5 @@
 import { IsString, MaxLength, MinLength } from "class-validator";
-import { IBrand } from "src/common";
+import { IBrand } from "../../../common";
 
 export class CreateBrandDto  implements Partial<IBrand>{
     @MinLength(2)

@@ -1,13 +1,14 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import {  GetAllCategoryQueryDto, UpdateCategoryDto } from './dto/update-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import { BrandRepository, CategoryRepository } from 'src/DB/Repository';
-import { FolderEnum, S3Service } from 'src/common';
-import type { CategoryDocument } from 'src/DB/Model';
-import type {UserDocument} from 'src/DB/Model'
+import { FolderEnum, S3Service } from '../../common';
+import type { CategoryDocument } from '../../DB/Model';
+import type {UserDocument} from '../../DB/Model'
 import { Types } from 'mongoose';
-import { Lean } from 'src/DB/Repository/database.repository';
+import { Lean } from '../../DB/Repository/database.repository';
 import { randomUUID } from 'crypto';
+import { GetAllSearchQueryDto } from '../../common/dtos';
 
 @Injectable()
 export class CategoryService {
@@ -24,7 +25,8 @@ export class CategoryService {
     const { name } = createCategoryDto
     const checkNameDuplicate = await this.categoryRepository.findOne({ filter: { name , paranoid: false,} })
     if (checkNameDuplicate) {
-      throw new ConflictException(checkNameDuplicate?.freezedAt ? 'Duplicated with archived category'
+      throw new ConflictException(checkNameDuplicate?.freezedAt ?
+        'Duplicated with archived category'
         : 'Duplicated category name')
     }
 
@@ -152,7 +154,7 @@ async freeze(
         throw new NotFoundException('Fail to find matching category instance');
       }
 
-  return 'done';
+  return 'Done';
     }
   
   async restore(
@@ -205,7 +207,7 @@ async freeze(
 
 
   
-  async findAll(data: GetAllCategoryQueryDto
+  async findAll(data: GetAllSearchQueryDto
     , archive: boolean = false): Promise<{
   currentPage: number | 'all';
   pages?: number;
@@ -214,7 +216,7 @@ async freeze(
   result: CategoryDocument[] | Lean<CategoryDocument>[];
 }> {
 
-    const { page, size , search }:GetAllCategoryQueryDto = data;
+    const { page, size , search }:GetAllSearchQueryDto = data;
 
     const result = await this.categoryRepository.paginate({
       filter: {

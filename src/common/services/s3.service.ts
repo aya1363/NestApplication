@@ -70,7 +70,7 @@ async testBucketRegion() {
 };
 
     uploadFiles = async ({
-    storageApproach = storageEnum.memory,
+    storageApproach = storageEnum.disk,
     Bucket = process.env.AWS_BUCKET_NAME as string,
     path = "general",
     ACL = "private",

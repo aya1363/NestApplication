@@ -1,5 +1,5 @@
 import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { GenderEnum, PreferredLanguage, ProviderEnum, RoleEnum } from '../../common/enums';
 import { OtpDocument } from './otp.model';
 import { generateHash } from 'src/common';
@@ -44,9 +44,19 @@ export class User implements IUser{
     @Prop({
         type: String,
         required: true,
-        unique: true
+        unique: true,
+
     })
     email: string;
+
+    @Prop({
+        type: [{
+            type: Types.ObjectId,
+            ref: 'Product'
+        }],
+    default: []
+})
+wishlist?: Types.ObjectId[];
 
     @Prop({
         type: Date,

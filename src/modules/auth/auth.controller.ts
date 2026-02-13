@@ -9,8 +9,16 @@ import {
 
 
 import { AuthenticationService } from './auth.service';
-import { confirmEmailBodyDto, IGmail, loginBodyDto, resendConfirmEmailBodyDto, ResetPasswordDto, SendOtpDto, SignupBodyDto, VerifyOtpDto } from './dto/auth.dto';
-import { IResponse, loginCredentialsResponse, successResponse } from 'src/common';
+import {
+  confirmEmailBodyDto, IGmail,
+  loginBodyDto, resendConfirmEmailBodyDto,
+  ResetPasswordDto, SendOtpDto, SignupBodyDto,
+  VerifyOtpDto
+} from './dto/auth.dto';
+import {
+  IResponse, loginCredentialsResponse,
+  successResponse
+} from '../../common';
 
 
 

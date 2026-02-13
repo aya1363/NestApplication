@@ -1,6 +1,6 @@
 import { IsOptional, IsString, MaxLength, MinLength, Validate } from "class-validator";
 import { Types } from "mongoose";
-import { ICategory, MongoIdsValidate } from "src/common";
+import { ICategory, MongoIdsValidate } from "../../../common";
 
 export class CreateCategoryDto implements Partial<ICategory> {
         @MinLength(2)

@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { GenderEnum, PreferredLanguage, ProviderEnum, RoleEnum } from "../enums";
 import { OtpDocument } from "src/DB/Model";
+import { IProduct } from "./product.interface";
 
 export interface IUser{
     _id?: Types.ObjectId;
@@ -17,7 +18,8 @@ export interface IUser{
     provider: ProviderEnum;
     role: RoleEnum
     preferredLanguage: PreferredLanguage
-    profilePicture?:string
+    profilePicture?: string
+    wishlist?:Types.ObjectId[]| IProduct[];
     otp?:OtpDocument[]
         
     }

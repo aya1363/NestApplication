@@ -9,7 +9,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 
-import { GenderEnum, IsMatch } from 'src/common';
+import { GenderEnum, IsMatch } from '../../../common';
 
 export class IGmail {
   @IsString()

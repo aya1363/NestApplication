@@ -1,31 +1,32 @@
 import {
-  Controller, Get, Headers, ParseFilePipe, Patch, Post,
+  Controller, Get, ParseFilePipe, Patch,
   UploadedFile,
   UploadedFiles,
   UseInterceptors} from '@nestjs/common';
 import { UserService } from './user.service';
-import { Auth, cloudFileUpload, fileValidation, RoleEnum, storageEnum, successResponse, User } from 'src/common';
-import type{ UserDocument } from 'src/DB/Model';
-import { PreferredLanguageInterceptor } from 'src/common/interceptors';
-import { delay, of ,Observable} from 'rxjs';
+import { Auth, cloudFileUpload, fileValidation, RoleEnum, storageEnum, successResponse, User } from '../../common';
+import type{ UserDocument } from '../../DB/Model';
+import { PreferredLanguageInterceptor } from '../../common/interceptors';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { localFileUpload } from 'src/common';
-import type { IMulterFile, IResponse } from 'src/common/interfaces';
+import { localFileUpload } from '../../common';
+import type { IMulterFile, IResponse } from '../../common/interfaces';
 import { ProfileResponse } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 @UseInterceptors(PreferredLanguageInterceptor)
-@Auth([RoleEnum.admin ,RoleEnum.user])
+  @Auth([RoleEnum.admin ,RoleEnum.superAdmin,RoleEnum.user])
   @Get()
-profile(
-    @Headers() header: any,
-    @User() user: UserDocument): Observable<any> {
-  console.log({user ,header});
-  
-  return of([{message:'done'}]).pipe(delay(200));
+async profile(
+    @User() user: UserDocument): Promise<IResponse<ProfileResponse>> {
+  console.log({user });
+  const profile =await this.userService.profile(user)
+
+  return successResponse<ProfileResponse>({data:{profile}})
   }
+
+
   @UseInterceptors(FileInterceptor('profileImage',
     cloudFileUpload({storageApproach:storageEnum.memory,
       validation: fileValidation.image,
@@ -54,19 +55,9 @@ const profile =await this.userService.profilePicture(file ,user)
   coverImages(@UploadedFiles(new ParseFilePipe({fileIsRequired:true})) files:Array<IMulterFile>){
   
     console.log({files});
-    
-
-
     return successResponse()
   }
-  @Post('list')
-  list(): { message: string } {
-  
-    
 
-
-    return {message:'done'}
-  }
 
 
 }

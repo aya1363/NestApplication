@@ -8,7 +8,7 @@ import { TokenModel, UserModel } from 'src/DB/Model';
 imports: [
 
 TokenModel,
-UserModel,],
+UserModel],
 
 providers: [
 TokenService,

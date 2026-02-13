@@ -1,4 +1,4 @@
-import { RoleEnum } from "src/common";
+import { RoleEnum } from "../../common";
 
 export const endPoint = {
     create:[RoleEnum.admin ,RoleEnum.superAdmin ]

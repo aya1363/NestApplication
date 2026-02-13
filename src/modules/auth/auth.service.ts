@@ -16,9 +16,9 @@ import {
 import { confirmEmailBodyDto, IGmail, loginBodyDto, resendConfirmEmailBodyDto, ResetPasswordDto, SendOtpDto, SignupBodyDto, VerifyOtpDto } from './dto/auth.dto';
 import { compareHash, generateHash, generateOtp, OtpEnum, ProviderEnum, TokenService } from 'src/common';
 import { Types } from 'mongoose';
-import { loginCredentialsResponse } from 'src/common';
-import { OtpRepository, UserRepository } from 'src/DB/Repository';
-import { UserDocument } from 'src/DB/Model';
+import { loginCredentialsResponse } from '../../common';
+import { OtpRepository, UserRepository } from '../../DB/Repository';
+import { UserDocument } from '../../DB/Model';
 
 
 

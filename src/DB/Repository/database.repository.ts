@@ -113,8 +113,9 @@ async findOneAndDelete({
     return await this.model.updateOne(
       filter,
       {
-        ...update,
+       
         $inc: { __v: 1 },
+        ...update,
       },
       options,
     );
@@ -210,20 +211,20 @@ async findOneAndDelete({
       options,
     );
   }
+  
+async create({
+  data,
+  options,
+}: {
+  data: Partial<TDocument> | Partial<TDocument>[];
+  options?: CreateOptions;
+}): Promise<HydratedDocument<TDocument>[]> {
+  const docs = Array.isArray(data) ? data : [data];
+  const result = await this.model.create(docs, options);
+  return result as HydratedDocument<TDocument>[];
+}
 
-  async create({
-    data,
-    options,
-  }: {
-    data: Partial<TDocument> | Partial<TDocument>[];
-    options?: CreateOptions | undefined;
-  }): Promise<HydratedDocument<TDocument>[]> {
-    const docs = Array.isArray(data) ? data : [data];
 
-    const result = await this.model.create(docs, options);
-
-    return result as HydratedDocument<TDocument>[];
-  }
 
 async paginate({
   filter = {},

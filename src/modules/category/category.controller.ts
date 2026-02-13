@@ -1,12 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UsePipes, UseInterceptors, UploadedFile, ParseFilePipe, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { CategoryParamsDto, GetAllCategoryQueryDto, UpdateCategoryDto } from './dto/update-category.dto';
-import type{  UserDocument } from 'src/DB';
+import { CategoryParamsDto, UpdateCategoryDto } from './dto/update-category.dto';
+import type{  UserDocument } from '../../DB';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { endPoint } from './category.authorization';
-import { Auth, cloudFileUpload, fileValidation, IResponse, successResponse, User } from 'src/common';
-import { CategoryResponse, GetAllCategoryResponse } from './entities/category.entity';
+import { Auth, cloudFileUpload, fileValidation, ICategory, IResponse, successResponse, User } from '../../common';
+import { CategoryResponse,  } from './entities/category.entity';
+import { GetAllSearchQueryDto ,GetAllResponse} from '../../common';
 
 @UsePipes(new ValidationPipe({whitelist:true , forbidNonWhitelisted:true}))
 @Controller('category')
@@ -78,18 +79,18 @@ export class CategoryController {
 
   @Get()
   async findAll(
-    @Query() query: GetAllCategoryQueryDto)
-    : Promise < IResponse < GetAllCategoryResponse >> {
+    @Query() query: GetAllSearchQueryDto)
+    : Promise < IResponse < GetAllResponse<ICategory> >> {
     const result = await this.categoryService.findAll(query);
-    return successResponse <GetAllCategoryResponse>({data:{result}})
+    return successResponse <GetAllResponse<ICategory>>({data:{result}})
   }
   @Auth(endPoint.create)
   @Get('/archive')
   async findAllArchives(
-    @Query() query:GetAllCategoryQueryDto
-):Promise<IResponse<GetAllCategoryResponse>> {
+    @Query() query:GetAllSearchQueryDto
+):Promise<IResponse<GetAllResponse<ICategory>>> {
     const result = await this.categoryService.findAll(query , true );
-    return successResponse <GetAllCategoryResponse>({data:{result}})
+    return successResponse <GetAllResponse<ICategory>>({data:{result}})
   }
 
   @Get('/:categoryId')

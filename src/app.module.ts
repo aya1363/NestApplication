@@ -12,6 +12,10 @@ import { GlobalExceptionFilter, S3Service } from './common';
 import { BrandModule } from './modules/brand/brand.module';
 import { APP_FILTER } from '@nestjs/core';
 import { CategoryModule } from './modules/category/category.module';
+import { ProductModule } from './modules/product/product.module';
+import { CartModule } from './modules/cart/cart.module';
+import { CouponModule } from './modules/coupon/coupon.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -26,7 +30,11 @@ import { CategoryModule } from './modules/category/category.module';
     AuthenticationModule,
     UserModule,
     BrandModule,
-    CategoryModule
+    CategoryModule,
+    ProductModule,
+    CartModule,
+    CouponModule,
+    OrderModule
     
   ],
   controllers: [AppController],

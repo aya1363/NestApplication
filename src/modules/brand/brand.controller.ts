@@ -1,11 +1,17 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipe, UsePipes, ValidationPipe, Query } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
-import { BrandParamsDto,  GetAllBrandQueryDto, UpdateBrandDto } from './dto/update-brand.dto';
-import {  Auth, cloudFileUpload, fileValidation, IResponse, successResponse, User } from 'src/common';
-import type{ UserDocument } from 'src/DB/Model';
+import {
+  BrandParamsDto, GetAllBrandQueryDto,
+  UpdateBrandDto
+} from './dto/update-brand.dto';
+import {
+  Auth, cloudFileUpload, fileValidation,
+  GetAllResponse, IBrand, IResponse, successResponse, User
+} from '../../common';
+import type{ UserDocument } from '../../DB/Model';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { BrandResponse, GetAllResponse } from './entities/brand.entity';
+import { BrandResponse } from './entities/brand.entity';
 import { endPoint } from './brand.authorization';
 @UsePipes(new ValidationPipe({whitelist:true , forbidNonWhitelisted:true}))
 @Controller('brand')
@@ -24,7 +30,7 @@ export class BrandController {
 
   @Auth(endPoint.create)
   @Patch(':brandId')
- async update(@User() user:UserDocument,
+  async update(@User() user:UserDocument,
     @Param() params: BrandParamsDto,
     @Body() updateBrandDto: UpdateBrandDto,
   
@@ -67,7 +73,7 @@ export class BrandController {
   @Auth(endPoint.create)
   @Delete(':brandId/remove')
   async remove(@Param() params: BrandParamsDto,
-@User() user: UserDocument,  ) {
+@User() user: UserDocument):Promise<IResponse> {
     await this.brandService.remove(params.brandId, user);
     return successResponse()
   }
@@ -77,17 +83,17 @@ export class BrandController {
   @Get()
   async findAll(
     @Query() query:GetAllBrandQueryDto
-):Promise<IResponse<GetAllResponse>> {
+):Promise<IResponse<GetAllResponse<IBrand>>> {
     const result = await this.brandService.findAll(query);
-    return successResponse <GetAllResponse>({data:{result}})
+    return successResponse <GetAllResponse<IBrand>>({data:{result}})
   }
   @Auth(endPoint.create)
   @Get('/archive')
   async findAllArchives(
     @Query() query:GetAllBrandQueryDto
-):Promise<IResponse<GetAllResponse>> {
+):Promise<IResponse<GetAllResponse<IBrand>>> {
     const result = await this.brandService.findAll(query , true );
-    return successResponse <GetAllResponse>({data:{result}})
+    return successResponse <GetAllResponse<IBrand>>({data:{result}})
   }
 
   @Get('/:brandId')

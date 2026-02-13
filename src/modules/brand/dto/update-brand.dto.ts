@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateBrandDto } from './create-brand.dto';
 import { Types } from 'mongoose';
 import { IsInt, IsMongoId, IsNotEmpty, IsOptional, IsPositive, IsString } from 'class-validator';
-import { containField } from 'src/common';
+import { containField } from '../../../common';
 import { Type } from 'class-transformer';
 @containField()
 export class UpdateBrandDto extends PartialType(CreateBrandDto) { 

@@ -7,5 +7,6 @@ export enum FolderEnum {
   Brand = 'Brand',
   category = 'category',
   product = 'product',
-  Users = 'Users'
+  Users = 'Users',
+  Coupon='Coupon'
 }

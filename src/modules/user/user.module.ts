@@ -14,7 +14,8 @@ import { S3Service } from 'src/common';
     S3Service
     
 
-  ],
+  ]
+
 })
 export class UserModule {
   configure(consumer: MiddlewareConsumer) {

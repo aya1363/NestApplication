@@ -1,6 +1,7 @@
 export * from './decorators'
 export * from './enums'
 export * from './utils'
+export * from './dtos'
 export * from './services'
 export * from './middleware'
 export * from './entities'

@@ -54,10 +54,13 @@ export class Category implements ICategory {
     })
     updatedBy?: Types.ObjectId 
 
-    @Prop([{
-        type: Types.ObjectId,
-        ref: 'Brand',
-        required:false}])
+    @Prop({
+        type: [{
+            type: Types.ObjectId,
+            ref: 'Brand'
+        }],
+    default: []
+})
     brands?: Types.ObjectId[]
 
     @Prop({ type: Date })
